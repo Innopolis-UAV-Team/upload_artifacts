@@ -48,6 +48,9 @@ The repository provides a GitHub Action step for uploading an artifact to a MINI
     WIFI (might change):   http://10.95.0.117:9001/browser/artifacts/upload_artifacts...
     ---------------------------------
     ```
+5) Login with READONLY account:
+    - Password: `uavteamgit`
+    - Password: `drone123`
 
 ## Troubleshooting
 <details>
