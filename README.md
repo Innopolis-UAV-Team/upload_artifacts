@@ -9,7 +9,7 @@ The repository provides a GitHub Action step for uploading an artifact to a MINI
 1) Force running on our local machine:
     ```yaml
     build:
-      runs-on: [self-hosted, olegoshkaff]
+      runs-on: [self-hosted, StepanQGC]
     ```
 2) Add the uploading step to your workflow (usually at the end):
     ```yaml

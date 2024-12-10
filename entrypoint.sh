@@ -13,7 +13,7 @@ current_time=$(git show -s --date=format:"%Y.%m.%d-%H:%M" --format=%cd)
 commit_backet_name="${current_time}...SHA-${commit_sha}"
 
 # Using lftp to upload files
-~/mc alias set myminio http://localhost:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
+~/mc alias set myminio http://172.18.0.4:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
 ~/mc mb myminio/artifacts/$repo_name/$branch_name/$commit_backet_name
 ~/mc cp $path myminio/artifacts/$repo_name/$branch_name/$commit_backet_name/
 

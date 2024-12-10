@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, olegoshkaff]
+    runs-on: [self-hosted, StepanQGC]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
