@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, StepanQGC]
+    runs-on: [self-hosted, Stepan_QGC_main]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
