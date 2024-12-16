@@ -3,6 +3,7 @@
 path=$1
 MINIO_ACCESS_KEY=$2
 MINIO_SECRET_KEY=$3
+MINIO_URL=$4
 
 # Ensure the script is executable
 repo_name=$(basename $(git remote get-url origin) .git | tr '[:upper:]' '[:lower:]')
@@ -13,7 +14,7 @@ current_time=$(git show -s --date=format:"%Y.%m.%d-%H:%M" --format=%cd)
 commit_backet_name="${current_time}...SHA-${commit_sha}"
 
 # Using lftp to upload files
-~/mc alias set myminio http://olegoshkaff.uavlab.local:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
+~/mc alias set myminio $MINIO_URL $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
 ~/mc mb myminio/artifacts/$repo_name/$branch_name/$commit_backet_name
 ~/mc cp $path myminio/artifacts/$repo_name/$branch_name/$commit_backet_name/
 
@@ -21,7 +22,7 @@ echo ""
 echo ""
 echo "Artifact has been uploaded successfully. You can find your file at:"
 echo "----------FILE LOCATION----------"
-echo "VPN (TailScale):     http://olegoshkaff.uavlab.local:9001/browser/artifacts/${repo_name}%2F${branch_name}%2F${commit_backet_name}%2F"
+echo "Uploaded through       ${MINIO_URL}/browser/artifacts/${repo_name}%2F${branch_name}%2F${commit_backet_name}%2F"
 echo "WIFI (might change):   http://10.95.0.117:9001/browser/artifacts/${repo_name}%2F${branch_name}%2F${commit_backet_name}%2F"
 echo "---------------------------------"
 echo "If you have any problems with getting your artifacts, please contact @jpeg_not_ded or @AsiiaBara (if someone is still working here)."
