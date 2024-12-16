@@ -4,8 +4,6 @@ The repository provides a GitHub Action step for uploading an artifact to a MINI
 
 ## Usage
 
-:exclamation: **Important:** only works for our local runner currently.
-
 1) Force running on our local machine:
     ```yaml
     build:
@@ -20,12 +18,14 @@ The repository provides a GitHub Action step for uploading an artifact to a MINI
           path: *my_file*
           MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
           MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
+          MINIO_URL: *URL of your Minio instance, the default is http://olegoshkaff.uavlab.local:9001*
     ```
 3) Replace `*my_file*` with the path to your file in the repository.
     > E.g. path to `test.yml` is `.github/workflows/test.yml`.
-4) Get secrets for your repository from https://github.com/stepan14511 or https://github.com/AsiiaPine. Add them to the secrets of your repository. There is a possibility that you do not have enough permissions to do so, then ask someone responsible for this to do so.
+4) Add a URL or omit `MINIO_URL` completely if the default works for you.
+5) Get secrets for your repository from https://github.com/stepan14511 or https://github.com/AsiiaPine. Add them to the secrets of your repository. There is a possibility that you do not have enough permissions to do so, then ask someone responsible for this to do so.
 
-    Guide how to add secrets: https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository
+    Guide on how to add secrets: https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository
 
     Secrets, you need to add:
     1) `MINIO_ACCESS_KEY`
@@ -35,7 +35,7 @@ The repository provides a GitHub Action step for uploading an artifact to a MINI
 
 1) Go to the desired action.  
 
-    You can do it right from the commit page, or from the `Actions` tab of your repository.
+    You can do it right from the commit page or your repository's `Actions` tab.
 
 2) Open `build` job.
 3) Find `Upload artifacts` step there.
@@ -44,7 +44,7 @@ The repository provides a GitHub Action step for uploading an artifact to a MINI
     E.g.:
     ```yaml
     ----------FILE LOCATION----------
-    VPN (Netherlands):     http://10.8.0.4:9001/browser/artifacts/upload_artifacts...
+    Uploaded through:     <URL you set in the YAML file>/browser/artifacts/upload_artifacts...
     WIFI (might change):   http://10.95.0.117:9001/browser/artifacts/upload_artifacts...
     ---------------------------------
     ```
@@ -81,10 +81,9 @@ The repository provides a GitHub Action step for uploading an artifact to a MINI
 ## Future
 
 - [x] [Feature] Direct link to file.
-- [ ] [Feature] Create separate bucket for storing releases.
-- [ ] [Feature] Make users a choice of different types of artifacts (simple commit, release, stable version, etc.) to store them separately and treat the artifacts appropriately.
+- [ ] [Feature] Create a separate bucket for storing releases.
+- [ ] [Feature] Allow users to choose different types of artifacts (simple commit, release, stable version, etc.) to store them separately and treat the artifacts appropriately.
 - [ ] [Feature] Upload several files at the same time.
-- [ ] [Feature] Make access to the filebase from other runners (white IP is necessary for the filesystem).
 - [ ] [Safety] Make the filesystem distributed.
 
 > You are free to suggest any features in the `Issues` tab.
