@@ -14,7 +14,7 @@ inputs:
     required: true
   MINIO_URL:
     description: 'The minio storage system should be available at this location'
-    default: 'olegoshkaff.uavlab.loca'
+    default: 'http://olegoshkaff.uavlab.local:9001'
 runs:
   using: 'composite'
   steps:
