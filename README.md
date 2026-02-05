@@ -29,7 +29,7 @@ The repository provides a GitHub Action (Docker-based) for uploading artifacts t
     ```
 3) Replace `<path_to_your_file_or_directory>` with the path to your file or directory in the repository.
     > E.g., `./build/` or `./dist/app.zip`
-4) Add the MinIO URL or use the default: `http://minio.uavlab.site/`
+4) Add the MinIO URL or use the default: `http://api.minio.uavlab.site/`
 5) Get secrets for your repository from the team administrators. Add them to the secrets of your repository.
 
     Guide on how to add secrets: https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository

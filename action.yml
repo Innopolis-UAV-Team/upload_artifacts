@@ -16,7 +16,7 @@ inputs:
   MINIO_URL:
     description: 'The MinIO storage system endpoint URL'
     required: true
-    default: 'http://minio.uavlab.site/'
+    default: 'http://api.minio.uavlab.site/'
 
 runs:
   using: 'docker'
