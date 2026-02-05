@@ -74,8 +74,5 @@ artifacts/
     📁 File location:
        http://minio.uavlab.site/browser/artifacts/my-repo/main/SHA-abc1234/
     ==========================================
-
-    🌐 Direct browser link:
-       http://minio.uavlab.site/browser/artifacts%2Fmy-repo%2Fmain%2FSHA-abc1234%2F
     ```
 5) Login with the appropriate account credentials when accessing the MinIO browser.

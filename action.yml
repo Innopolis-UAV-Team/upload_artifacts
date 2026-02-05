@@ -14,7 +14,7 @@ inputs:
     required: true
 
   MINIO_URL:
-    description: 'The MinIO storage system endpoint URL'
+    description: 'The MinIO storage system API URL'
     required: true
     default: 'http://api.minio.uavlab.site/'
 

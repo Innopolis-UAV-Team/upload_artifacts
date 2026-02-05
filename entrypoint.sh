@@ -113,16 +113,7 @@ echo ""
 echo "✅ Artifact has been uploaded successfully!"
 echo "=========================================="
 echo "📁 File location:"
-echo "   ${MINIO_URL}/browser/${upload_path}/"
+echo "   <your minio (not api) uri>/browser/${upload_path}/"
 echo "=========================================="
 echo ""
-
-if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-    # URL encode the path for browser access
-    encoded_path=$(echo "${upload_path}" | sed 's|/|%2F|g')
-    echo "🌐 Direct browser link:"
-    echo "   ${MINIO_URL}/browser/${encoded_path}/"
-    echo ""
-fi
-
 echo "ℹ️  If you have any problems accessing your artifacts, please contact the team."
