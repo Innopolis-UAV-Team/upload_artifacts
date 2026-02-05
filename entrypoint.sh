@@ -7,8 +7,24 @@ MINIO_ACCESS_KEY=$2
 MINIO_SECRET_KEY=$3
 MINIO_URL=$4
 
-# Check if we're in a git repository
-if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+# Change to GitHub workspace if it exists (for Docker actions)
+if [ -n "$GITHUB_WORKSPACE" ] && [ -d "$GITHUB_WORKSPACE" ]; then
+    echo "Detected GitHub Actions environment"
+    cd "$GITHUB_WORKSPACE"
+    echo "Working directory: $(pwd)"
+    echo "Contents: $(ls -la | head -10)"
+fi
+
+echo "Debug info:"
+echo "  GITHUB_REPOSITORY: ${GITHUB_REPOSITORY:-<not set>}"
+echo "  GITHUB_SHA: ${GITHUB_SHA:-<not set>}"
+echo "  GITHUB_REF_NAME: ${GITHUB_REF_NAME:-<not set>}"
+echo "  GITHUB_REF: ${GITHUB_REF:-<not set>}"
+echo "  .git exists: $([ -d .git ] && echo 'yes' || echo 'no')"
+echo ""
+
+# Check if we're in a git repository OR if GitHub Actions context is available
+if git rev-parse --is-inside-work-tree > /dev/null 2>&1 || [ -n "$GITHUB_REPOSITORY" ]; then
     echo "Git repository detected. Uploading to structured path..."
 
     # Get commit SHA (8 character short version)
@@ -69,6 +85,16 @@ fi
 echo "Upload path: ${upload_path}"
 echo ""
 
+# Resolve the file path (handle relative paths in GitHub workspace)
+if [ -n "$GITHUB_WORKSPACE" ] && [ ! -f "$path" ] && [ ! -d "$path" ]; then
+    # Try relative to workspace
+    resolved_path="${GITHUB_WORKSPACE}/${path}"
+    if [ -e "$resolved_path" ]; then
+        path="$resolved_path"
+        echo "Resolved path to: ${path}"
+    fi
+fi
+
 # Configure MinIO client
 mc alias set myminio $MINIO_URL $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
 
@@ -77,6 +103,10 @@ mc mb -p myminio/${upload_path} 2>/dev/null || true
 
 # Upload the file(s)
 echo "Uploading ${path}..."
+if [ ! -e "$path" ]; then
+    echo "❌ Error: Path does not exist: ${path}"
+    exit 1
+fi
 mc cp -r $path myminio/${upload_path}/
 
 echo ""
