@@ -7,10 +7,12 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, Stepan_QGC_main]
+    runs-on:
+      group: Default
+      labels: [ self-hosted, Linux ]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Upload artifacts

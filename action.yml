@@ -1,23 +1,28 @@
 name: 'Upload Artifacts'
-description: 'Upload artifacts to FTP server'
+description: 'Upload artifacts to MinIO storage'
 inputs:
   path:
-    description: 'Filename to be uploaded'
+    description: 'Path to file or directory to be uploaded'
     required: true
 
   MINIO_ACCESS_KEY:
-    description: 'Access key for the minio storage system'
+    description: 'Access key for the MinIO storage system'
     required: true
 
   MINIO_SECRET_KEY:
-    description: 'Secret key for the minio storage system'
+    description: 'Secret key for the MinIO storage system'
     required: true
+
   MINIO_URL:
-    description: 'The minio storage system should be available at this location'
-    default: 'http://olegoshkaff.uavlab.local:9001'
+    description: 'The MinIO storage system endpoint URL'
+    required: true
+    default: 'http://minio.uavlab.site/'
+
 runs:
-  using: 'composite'
-  steps:
-    - name: Run bash script
-      shell: bash
-      run: chmod +x ${{ github.action_path }}/entrypoint.sh && ${{ github.action_path }}/entrypoint.sh ${{ inputs.path }} ${{ inputs.MINIO_ACCESS_KEY }} ${{ inputs.MINIO_SECRET_KEY }} ${{ inputs.MINIO_URL }}
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.path }}
+    - ${{ inputs.MINIO_ACCESS_KEY }}
+    - ${{ inputs.MINIO_SECRET_KEY }}
+    - ${{ inputs.MINIO_URL }}
