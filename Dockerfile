@@ -1,21 +1,30 @@
-FROM minio/mc:latest AS mc-binary
+FROM python:3.11-slim
 
-FROM alpine:latest
-
-# Install required packages
-RUN apk add --no-cache \
-    bash \
+# Install git and other required packages
+RUN apt-get update && apt-get install -y \
     git \
-    ca-certificates
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy MinIO client from official image (no download needed!)
-COPY --from=mc-binary /usr/bin/mc /usr/local/bin/mc
-RUN chmod +x /usr/local/bin/mc && \
-    /usr/local/bin/mc --version
+# Set working directory
+WORKDIR /app
 
-# Copy the entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Copy requirements and install dependencies
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Set the entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
+# Copy the Python script
+COPY minio_manager.py /app/
+
+# Change to workspace and call minio_manager directly with environment variables
+ENTRYPOINT [
+    "sh", "-c",
+    "python3 /app/minio_manager.py \
+        --mode ${INPUT_MODE:-upload} \
+        --src_path \"${INPUT_SRC_PATH}\" \
+        --tgt_path \"${INPUT_TGT_PATH:-.}\" \
+        --bucket ${INPUT_BUCKET:-artifacts} \
+        --use_git ${INPUT_USE_GIT:-True} \
+        --minio_access_key ${INPUT_MINIO_ACCESS_KEY} \
+        --minio_secret_key ${INPUT_MINIO_SECRET_KEY} \
+        --minio_api_uri ${INPUT_MINIO_API_URI:-}"]

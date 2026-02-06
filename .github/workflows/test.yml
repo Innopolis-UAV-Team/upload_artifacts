@@ -18,6 +18,6 @@ jobs:
       - name: Upload artifacts
         uses: ./
         with:
-          path: README.md
-          MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
-          MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
+          src_path: README.md
+          minio_access_key: ${{ secrets.MINIO_ACCESS_KEY }}
+          minio_secret_key: ${{ secrets.MINIO_SECRET_KEY }}
