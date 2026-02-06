@@ -17,9 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY minio_manager.py /app/
 
 # Change to workspace and call minio_manager directly with environment variables
-ENTRYPOINT [
-    "sh", "-c",
-    "python3 /app/minio_manager.py \
+ENTRYPOINT ["sh", "-c", "python3 /app/minio_manager.py \
         --mode ${INPUT_MODE:-upload} \
         --src_path \"${INPUT_SRC_PATH}\" \
         --tgt_path \"${INPUT_TGT_PATH:-.}\" \

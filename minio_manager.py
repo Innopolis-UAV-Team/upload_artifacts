@@ -20,8 +20,7 @@ def generate_git_path(use_git: bool, target_path: Path) -> Path:
             tgt_path_trunk = (
                     Path(repo.working_tree_dir).stem /
                     Path(repo.active_branch.name) /
-                    Path(f"SHA-{repo.head.commit.hexsha[:7]}") /
-                    target_path
+                    Path(f"SHA-{repo.head.commit.hexsha[:7]}")
             )
         except InvalidGitRepositoryError:
             print("No git repository found. Proceeding without git info.")
@@ -59,7 +58,7 @@ def upload_to_minio(args: argparse.Namespace) -> None:
     else:
         print(f"Using existing bucket: {args.bucket}")
 
-    tgt_path_trunk = generate_git_path(args.use_git, args.tgt_path)
+    tgt_path_trunk = generate_git_path(args.use_git, args.tgt_path) / args.tgt_path
     src_path = args.src_path
 
     if not src_path.exists():
@@ -109,7 +108,7 @@ def download_from_minio(args: argparse.Namespace) -> None:
 
     # Generate source path in MinIO (with git info if enabled)
     # We need to separate the git trunk from the actual source path
-    git_trunk_without_src = generate_git_path(args.use_git, Path('.'))
+    git_trunk_without_src = generate_git_path(args.use_git, args.src_path)
 
     # Ensure target directory exists
     tgt_path = args.tgt_path
@@ -126,21 +125,18 @@ def download_from_minio(args: argparse.Namespace) -> None:
         files_downloaded = 0
         for obj in objects:
             # Get the object name
-            object_name = obj.object_name
-            # Strip only the git trunk (repo/branch/SHA), keep the source path
-            relative_path = Path(object_name).relative_to(git_trunk_without_src)
 
-            # Determine local file path
-            local_file_path = tgt_path / relative_path
+            remote = Path(obj.object_name).relative_to(git_trunk_without_src) if args.use_git else obj.object_name
+            local_file_path = tgt_path / remote
             local_file_path.parent.mkdir(parents=True, exist_ok=True)
 
             # Download the file
             try:
-                client.fget_object(args.bucket, object_name, str(local_file_path))
-                print(f"Downloaded: {object_name} -> {local_file_path}")
+                client.fget_object(args.bucket, obj.object_name, str(local_file_path))
+                print(f"Downloaded: {obj.object_name} -> {local_file_path}")
                 files_downloaded += 1
             except S3Error as e:
-                print(f"Failed to download {object_name}: {e}")
+                print(f"Failed to download {obj.object_name}: {e}")
 
         if files_downloaded == 0:
             print(f"No files found at: {git_trunk_without_src}")
@@ -169,6 +165,17 @@ def main(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
+
+    def str2bool(v):
+        if isinstance(v, bool):
+            return v
+        if v.lower() in ('yes', 'true', 't', 'y', '1'):
+            return True
+        elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+            return False
+        else:
+            raise argparse.ArgumentTypeError('Boolean value expected.')
+
     parser = argparse.ArgumentParser(description="MinIO file transfer utility" )
     parser.add_argument(
         "--minio_secret_key", type=str, required=True,
@@ -192,7 +199,7 @@ if __name__ == "__main__":
         "--mode", type=str, choices=["upload", "download"], required=True,
         help="Operation mode: upload or download" )
     parser.add_argument(
-        "--use_git", type=bool, required=False, default=True,
+        "--use_git", type=str2bool, required=False, default=True,
         help="If git repo info is used for path generation" )
 
     main(parser.parse_args())
