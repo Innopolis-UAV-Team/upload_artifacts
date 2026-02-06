@@ -3,8 +3,51 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from urllib.parse import urlparse
 
 from git import Repo, InvalidGitRepositoryError
+
+
+def get_repo_name(repo: Repo) -> str:
+    """Extract repository name from GitHub environment or git remote."""
+    # First, try GitHub Actions environment variable (most reliable in CI/CD)
+    github_repo = os.environ.get('GITHUB_REPOSITORY')
+    if github_repo:
+        # Format is "owner/repo-name", extract just the repo name
+        return github_repo.split('/')[-1].lower()
+
+    # Second, try to get from git remote
+    try:
+        if repo.remotes and len(repo.remotes) > 0:
+            # Get the first remote (usually 'origin')
+            remote = repo.remotes[0]
+            for remote_url in remote.urls:
+                # Parse different URL formats
+                # SSH: git@github.com:user/repo.git
+                # HTTPS: https://github.com/user/repo.git
+
+                if remote_url.startswith('git@') or ':' in remote_url and not remote_url.startswith('http'):
+                    # SSH format: git@github.com:user/repo.git
+                    path_part = remote_url.split(':')[-1]
+                else:
+                    # HTTPS format: use urlparse
+                    parsed = urlparse(remote_url)
+                    path_part = parsed.path
+
+                # Extract repo name from path
+                repo_name = path_part.rstrip('/').split('/')[-1]
+
+                # Remove .git suffix if present
+                if repo_name.endswith('.git'):
+                    repo_name = repo_name[:-4]
+                if repo_name:
+                    return repo_name.lower()
+
+    except Exception as e:
+        print(f"Warning: Could not extract repo name from git remote: {e}")
+
+    # Final fallback to directory name
+    return Path(repo.working_tree_dir).name.lower()
 
 
 def generate_git_path(use_git: bool, target_path: Path) -> Path:
@@ -14,12 +57,18 @@ def generate_git_path(use_git: bool, target_path: Path) -> Path:
             os.chdir(os.environ['GITHUB_WORKSPACE'])
         try:
             repo = Repo(Path('./'))
-            print(f"Git repository detected: "
-                  f"{repo.active_branch.name} ({repo.head.commit.hexsha[:7]})")
+            repo_name = get_repo_name(repo)
+            branch_name = repo.active_branch.name
+            commit_sha = repo.head.commit.hexsha[:7]
+
+            print(f"Git repository detected: {repo_name}")
+            print(f"  Branch: {branch_name}")
+            print(f"  Commit: {commit_sha}")
+
             tgt_path_trunk = (
-                    Path(repo.working_tree_dir).stem /
-                    Path(repo.active_branch.name) /
-                    Path(f"SHA-{repo.head.commit.hexsha[:7]}") /
+                    Path(repo_name) /
+                    Path(branch_name) /
+                    Path(f"SHA-{commit_sha}") /
                     target_path
             )
         except InvalidGitRepositoryError:
