@@ -16,7 +16,7 @@ def generate_git_path(use_git: bool, target_path: Path) -> Path:
         try:
             repo = Repo(Path('./'))
             print(f"Git repository detected: "
-                  f"{repo.active_branch.name} ({repo.head.commit.hexsha[:7]}")
+                  f"{repo.active_branch.name} ({repo.head.commit.hexsha[:7]})")
             tgt_path_trunk = (
                     Path(repo.working_tree_dir).stem /
                     Path(repo.active_branch.name) /
