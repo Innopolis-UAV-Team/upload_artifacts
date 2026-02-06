@@ -1,12 +1,12 @@
 # Artifact Uploader to MinIO Storage
 
-The repository provides a GitHub Action (Docker-based) for uploading artifacts to a MinIO storage system. The action automatically detects if it's running in a git repository and organizes files accordingly.
+The repository provides a GitHub Action (Docker-based) for uploading and downloading artifacts to a MinIO storage system. The action automatically detects if it's running in a git repository and organizes files accordingly.
 
 ## Features
 
 - **Smart Path Detection**: Automatically detects if running in a git repository
   - **In a Git Repo** (e.g., after using `actions/checkout`): Uploads to `./<bucket>/repo_name/branch_name/commit_sha/<file>`
-  - **Outside a Git Repo**: Uploads to `./<bucket>/<file>`
+  - **Outside a Git Repo**: Uploads to `./<bucket>/<dst_path>/<file>`
 - **Docker-based**: Runs in a containerized environment for consistency
 - **MinIO Integration**: Seamless integration with MinIO storage
 
@@ -117,10 +117,6 @@ artifacts/
 
     Example output:
     ```
-    ✅ Artifact has been uploaded successfully!
-    ==========================================
-    📁 File location:
-       http://minio.uavlab.site/browser/artifacts/my-repo/main/SHA-abc1234/
-    ==========================================
+    Upload completed successfully to: artifacts/minio_manage_artifacts/main/SHA-d6c0fc8
     ```
 5) Login with the appropriate account credentials when accessing the MinIO browser.
