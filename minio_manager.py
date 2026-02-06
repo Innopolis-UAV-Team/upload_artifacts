@@ -140,7 +140,7 @@ def download_from_minio(args: argparse.Namespace) -> None:
     path_alias = Path(alias)
 
     run_mc_command(["mc", "cp", "-r", f"{(path_alias / src_path_trunk).as_posix()}", f"{args.tgt_path}"])
-    print(f"\nDownload completed successfully to: {src_path_trunk.as_posix()}")
+    print(f"\nDownload completed successfully to: {args.tgt_path.as_posix()}")
 
 
 def main(args: argparse.Namespace) -> None:
