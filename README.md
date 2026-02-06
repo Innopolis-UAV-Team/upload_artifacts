@@ -102,7 +102,7 @@ artifacts/
 When not in a git repository, artifacts are stored like that:
 ```
 artifacts/
-└── uploads/
+└── tgt_path/
     └── your-files
 ```
 

@@ -18,14 +18,15 @@ jobs:
       - name: Upload artifacts
         uses: ./
         with:
-          src_path: README.md
+          src_path: ./README.md
           minio_access_key: ${{ secrets.MINIO_ACCESS_KEY }}
           minio_secret_key: ${{ secrets.MINIO_SECRET_KEY }}
 
       - name: Download artifacts
         uses: ./
         with:
-          src_path: README.md
+          src_path: ./README.md
           minio_access_key: ${{ secrets.MINIO_ACCESS_KEY }}
           minio_secret_key: ${{ secrets.MINIO_SECRET_KEY }}
           mode: download
+
