@@ -1,4 +1,4 @@
-# Artifact Uploader to MinIO Storage
+# MinIO Storage Artifact Manager
 
 The repository provides a GitHub Action (Docker-based) for uploading and downloading artifacts to a MinIO storage system. The action automatically detects if it's running in a git repository and organizes files accordingly.
 
