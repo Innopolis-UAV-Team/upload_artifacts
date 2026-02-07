@@ -19,20 +19,10 @@ WORKDIR /app
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the Python script
+# Copy the Python script and entrypoint
 COPY minio_manager.py /app/
+COPY entrypoint.sh /app/
+RUN chmod +x /app/entrypoint.sh
 
-# Change to workspace and call minio_manager directly with environment variables
-ENTRYPOINT ["sh", "-c", "\
-    git config --global --add safe.directory /github/workspace 2>/dev/null || true; \
-    git config --global --add safe.directory ${GITHUB_WORKSPACE} 2>/dev/null || true; \
-    cd ${GITHUB_WORKSPACE:-/github/workspace} 2>/dev/null || true; \
-    python3 /app/minio_manager.py \
-        --mode ${INPUT_MODE:-upload} \
-        --src_path \"${INPUT_SRC_PATH}\" \
-        --tgt_path \"${INPUT_TGT_PATH:-.}\" \
-        --bucket ${INPUT_BUCKET:-artifacts} \
-        --use_git ${INPUT_USE_GIT:-True} \
-        --minio_access_key ${INPUT_MINIO_ACCESS_KEY} \
-        --minio_secret_key ${INPUT_MINIO_SECRET_KEY} \
-        --minio_api_uri ${INPUT_MINIO_API_URI:-}"]
+# Use the entrypoint script
+ENTRYPOINT ["/app/entrypoint.sh"]

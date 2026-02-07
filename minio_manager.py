@@ -136,7 +136,7 @@ def download_from_minio(args: argparse.Namespace) -> None:
     alias = 'myminio'
     setup_mc_alias(alias, args.minio_api_uri, args.minio_access_key, args.minio_secret_key)
     src_path_trunk = Path(args.bucket) / generate_git_path(args.use_git, args.src_path)
-    src_path_trunk.mkdir(parents=True, exist_ok=True)
+    args.tgt_path.mkdir(parents=True, exist_ok=True)
     path_alias = Path(alias)
 
     run_mc_command(["mc", "cp", "-r", f"{(path_alias / src_path_trunk).as_posix()}", f"{args.tgt_path}"])

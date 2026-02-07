@@ -67,17 +67,19 @@ steps:
 
 ## Configuration Options
 
-| Input | Description | Required | Default |
-|-------|-------------|----------|---------|
-| `src_path` | Path to file/directory to upload or download | ✅ Yes | - |
-| `tgt_path` | Target path in MinIO (upload) or local (download) | No | `./` |
-| `bucket` | MinIO bucket name | No | `artifacts` |
-| `mode` | Operation mode: `upload` or `download` | No | `upload` |
-| `use_git` | Use git repository info for path generation | No | `true` |
-| `minio_access_key` | MinIO access key | ✅ Yes | - |
-| `minio_secret_key` | MinIO secret key | ✅ Yes | - |
-| `minio_api_uri` | MinIO server URL | ✅ Yes | `http://api.minio.uavlab.site/` |
-
+| Input              | Description                                              | Required | Default                         |
+|--------------------|----------------------------------------------------------|----------|---------------------------------|
+| `src_path`         | Path to file/directory to upload or download             | Yes      | -                               |
+| `tgt_path`         | Target path in MinIO (upload) or local (download)        | No       | `./`                            |
+| `bucket`           | MinIO bucket name                                        | No       | `artifacts`                     |
+| `mode`             | Operation mode: `upload` or `download`                   | No       | `upload`                        |
+| `use_git`          | Use git repository info for path generation              | No       | `true`                          |
+| `minio_access_key` | MinIO access key                                         | Yes      | -                               |
+| `minio_secret_key` | MinIO secret key                                         | Yes      | -                               |
+| `minio_api_uri`    | MinIO server URL                                         | Yes      | `http://api.minio.uavlab.site/` |
+| `uid`              | UID to run the action as (to avoid permission conflicts) | No       | 1001                            |
+| `gid`              | GID to run the action as (to avoid permission conflicts) | No       | 1001                            |
+    
 ### Setup Secrets
 
 Get secrets from your team administrators and add them to your repository:

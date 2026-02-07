@@ -42,6 +42,17 @@ inputs:
     required: true
     default: 'http://api.minio.uavlab.site/'
 
+  uid:
+    description: 'User ID to run the Docker container with (optional)'
+    required: false
+    default: '1001'
+
+  gid:
+    description: 'Group ID to run the Docker container with (optional)'
+    required: false
+    default: '1001'
+
+
 runs:
   using: 'docker'
   image: 'Dockerfile'
