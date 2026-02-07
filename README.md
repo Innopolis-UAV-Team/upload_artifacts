@@ -5,8 +5,8 @@ The repository provides a GitHub Action (Docker-based) for uploading and downloa
 ## Features
 
 - **Smart Path Detection**: Automatically detects if running in a git repository
-  - **In a Git Repo** (e.g., after using `actions/checkout`): Uploads to `./<bucket>/repo_name/branch_name/commit_sha/<file>`
-  - **Outside a Git Repo**: Uploads to `./<bucket>/<dst_path>/<file>`
+  - **In a Git Repo** (e.g., after using `actions/checkout`): Uploads to `./<bucket>/repo_name/branch_name/commit_sha/<tgt_path>/<file>`
+  - **Outside a Git Repo**: Uploads to `./<bucket>/<tgt_path>/<file>`
 - **Docker-based**: Runs in a containerized environment for consistency
 - **MinIO Integration**: Seamless integration with MinIO storage
 
@@ -21,7 +21,7 @@ steps:
   - name: Upload artifacts
     uses: Innopolis-UAV-Team/upload_artifacts@v1
     with:
-      path: ./build/
+      src_path: ./build/
       minio_access_key: ${{ secrets.MINIO_ACCESS_KEY }}
       minio_secret_key: ${{ secrets.MINIO_SECRET_KEY }}
       minio_api_uri: http://api.minio.uavlab.site/
@@ -38,8 +38,8 @@ steps:
   - name: Upload artifacts with custom settings
     uses: Innopolis-UAV-Team/upload_artifacts@v1
     with:
-      path: ./build/                    # Required: Path to upload/download
-      target_path: ./my-artifacts/      # Optional: Target path (default: './')
+      src_path: ./build/                    # Required: Path to upload/download
+      tgt_path: ./my-artifacts/      # Optional: Target path (default: './')
       bucket: my-bucket                 # Optional: Bucket name (default: 'artifacts')
       mode: upload                      # Optional: 'upload' or 'download' (default: 'upload')
       use_git: true                     # Optional: Use git info for paths (default: 'true')
@@ -55,8 +55,8 @@ steps:
   - name: Download artifacts
     uses: Innopolis-UAV-Team/upload_artifacts@v1
     with:
-      path: ./my-artifacts/             # Source path in MinIO
-      target_path: ./downloads/         # Where to save locally
+      src_path: ./my-artifacts/             # Source path in MinIO
+      tgt_path: ./downloads/         # Where to save locally
       mode: download                    # Switch to download mode
       bucket: artifacts
       use_git: true
@@ -69,14 +69,14 @@ steps:
 
 | Input | Description | Required | Default |
 |-------|-------------|----------|---------|
-| `path` | Path to file/directory to upload or download | ✅ Yes | - |
-| `target_path` | Target path in MinIO (upload) or local (download) | No | `./` |
+| `src_path` | Path to file/directory to upload or download | ✅ Yes | - |
+| `tgt_path` | Target path in MinIO (upload) or local (download) | No | `./` |
 | `bucket` | MinIO bucket name | No | `artifacts` |
 | `mode` | Operation mode: `upload` or `download` | No | `upload` |
 | `use_git` | Use git repository info for path generation | No | `true` |
-| `MINIO_ACCESS_KEY` | MinIO access key | ✅ Yes | - |
-| `MINIO_SECRET_KEY` | MinIO secret key | ✅ Yes | - |
-| `MINIO_URL` | MinIO server URL | ✅ Yes | `http://api.minio.uavlab.site/` |
+| `minio_access_key` | MinIO access key | ✅ Yes | - |
+| `minio_secret_key` | MinIO secret key | ✅ Yes | - |
+| `minio_api_uri` | MinIO server URL | ✅ Yes | `http://api.minio.uavlab.site/` |
 
 ### Setup Secrets
 
@@ -95,7 +95,8 @@ artifacts/
 └── repository-name/
     └── branch-name/
         └── SHA-abcd123/
-            └── your-files
+            └── tgt_path
+                └── your-files
 ```
 
 ### Without Git Repository
