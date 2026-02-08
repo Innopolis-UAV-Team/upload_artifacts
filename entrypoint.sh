@@ -33,7 +33,7 @@ if [ "${INPUT_MODE}" == "download" ]; then
   mkdir -p "${INPUT_TGT_PATH}"
   chown -R "${INPUT_UID}":"${INPUT_GID}" "${INPUT_TGT_PATH}"
   chown -R "${INPUT_UID}":"${INPUT_GID}" "${TMP_DIR}"
-  cp -r "${TMP_DIR}"/* "${INPUT_SRC_PATH}"
+  cp -r "${TMP_DIR}"/* "${INPUT_TGT_PATH}"
 fi
 
 exit $?
