@@ -12,7 +12,7 @@ cd "${GITHUB_WORKSPACE:-/github/workspace}" 2>/dev/null || true
 if [ "${INPUT_MODE}" == "download" ]; then
     TMP_DIR="/tmp/download"
     mkdir -p "${TMP_DIR}"
-    TGT_PATH="${TMP_DIR}/${INPUT_TGT_PATH}"
+    TGT_PATH="${TMP_DIR}"
 else
     TGT_PATH="${INPUT_TGT_PATH}"
 fi
@@ -31,9 +31,10 @@ python3 /app/minio_manager.py \
 # Adjust permissions of the downloaded files and move them to the target path
 if [ "${INPUT_MODE}" == "download" ]; then
   mkdir -p "${INPUT_TGT_PATH}"
-  chown -R "${INPUT_UID}":"${INPUT_GID}" "${INPUT_TGT_PATH}"
   chown -R "${INPUT_UID}":"${INPUT_GID}" "${TMP_DIR}"
-  cp -r "${TMP_DIR}"/* "${INPUT_SRC_PATH}"
+  echo "Moving files from ${TMP_DIR} to ${INPUT_TGT_PATH}"
+  cp -r "${TMP_DIR}"/* "${INPUT_TGT_PATH}"
+  chown -R "${INPUT_UID}":"${INPUT_GID}" "${INPUT_TGT_PATH}"
 fi
 
 exit $?
