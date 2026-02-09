@@ -61,7 +61,7 @@ def generate_git_path(use_git: bool, target_path: Path) -> Path:
             try:
                 branch_name = repo.active_branch.name
             except TypeError:
-                branch_name = "detached_head"
+                branch_name = Path("detached_head")
 
             commit_sha = repo.head.commit.hexsha[:7]
 
@@ -185,10 +185,10 @@ if __name__ == "__main__":
         "--minio_api_uri", type=str, required=True,
         help="MinIO API URI")
     parser.add_argument(
-        "--src_path", type=str, required=True,
+        "--src_path", type=Path, required=True,
         help="Source file or directory path")
     parser.add_argument(
-        "--tgt_path", type=str, required=False, default=Path('./'),
+        "--tgt_path", type=Path, required=False, default=Path('./'),
         help="Target file or directory path")
     parser.add_argument(
         "--bucket", type=str, required=False, default="artifacts",
