@@ -17,8 +17,8 @@ else
     TGT_PATH="${INPUT_TGT_PATH}"
 fi
 
-# Run the Python script
-python3 /app/minio_manager.py \
+# Run the Python script and capture output
+OUTPUT=$(python3 /app/minio_manager.py \
     --mode "${INPUT_MODE}" \
     --src_path "${INPUT_SRC_PATH}" \
     --tgt_path "${TGT_PATH}" \
@@ -26,7 +26,25 @@ python3 /app/minio_manager.py \
     --use_git "${INPUT_USE_GIT}" \
     --minio_access_key "${INPUT_MINIO_ACCESS_KEY}" \
     --minio_secret_key "${INPUT_MINIO_SECRET_KEY}" \
-    --minio_api_uri "${INPUT_MINIO_API_URI}"
+    --minio_api_uri "${INPUT_MINIO_API_URI}" 2>&1)
+
+EXIT_CODE=$?
+
+# Print the output
+echo "$OUTPUT"
+
+# Extract the artifact_path from output and set it as GitHub Action output
+if [ -n "${GITHUB_OUTPUT}" ]; then
+    ARTIFACT_PATH=$(echo "$OUTPUT" | grep -oP "::set-output name=artifact_path::\K.*" | tail -1)
+    if [ -n "${ARTIFACT_PATH}" ]; then
+        echo "artifact_path=${ARTIFACT_PATH}" >> "${GITHUB_OUTPUT}"
+    fi
+fi
+
+# Check if Python script succeeded
+if [ $EXIT_CODE -ne 0 ]; then
+    exit $EXIT_CODE
+fi
 
 # Adjust permissions of the downloaded files and move them to the target path
 if [ "${INPUT_MODE}" == "download" ]; then
@@ -37,4 +55,4 @@ if [ "${INPUT_MODE}" == "download" ]; then
   chown -R "${INPUT_UID}":"${INPUT_GID}" "${INPUT_TGT_PATH}"
 fi
 
-exit $?
+exit 0

@@ -53,6 +53,10 @@ inputs:
     default: '1001'
 
 
+outputs:
+  artifact_path:
+    description: 'Path to the uploaded artifact in MinIO (for upload) or local path of the downloaded artifact (for download)'
+
 runs:
   using: 'docker'
   image: 'Dockerfile'

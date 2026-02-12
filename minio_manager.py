@@ -50,7 +50,7 @@ def get_repo_name(repo: Repo) -> str:
     return Path(repo.working_tree_dir).name.lower()
 
 
-def generate_git_path(use_git: bool, target_path: Path) -> Path:
+def generate_git_path(use_git: bool) -> Path:
     """Generate path with git info if enabled."""
     if use_git:
         if 'GITHUB_WORKSPACE' in os.environ:
@@ -72,15 +72,14 @@ def generate_git_path(use_git: bool, target_path: Path) -> Path:
             tgt_path_trunk = (
                     Path(repo_name) /
                     Path(branch_name) /
-                    Path(f"SHA-{commit_sha}") /
-                    target_path
+                    Path(f"SHA-{commit_sha}")
             )
         except InvalidGitRepositoryError:
             print("No git repository found. Proceeding without git info.")
-            tgt_path_trunk = target_path
+            tgt_path_trunk = Path('./')
     else:
         print("Git info usage disabled. Proceeding without git info.")
-        tgt_path_trunk = target_path
+        tgt_path_trunk = Path('./')
 
     return tgt_path_trunk
 
@@ -116,35 +115,41 @@ def setup_mc_alias(alias: str, endpoint: str, access_key: str, secret_key: str) 
         sys.exit(result.returncode)
 
 
-def upload_to_minio(args: argparse.Namespace) -> None:
+def upload_to_minio(args: argparse.Namespace) -> str:
     """Handle upload operation using mc cp."""
     print("\nStarting upload operation...")
 
     # Setup mc alias
     alias = 'myminio'
     setup_mc_alias(alias, args.minio_api_uri, args.minio_access_key, args.minio_secret_key)
-    tgt_path_trunk = Path(args.bucket) / generate_git_path(args.use_git, args.tgt_path)
+    tgt_path_trunk = Path(args.bucket) / generate_git_path(args.use_git) / args.tgt_path
     path_alias = Path(alias)
 
     run_mc_command(["mc", "mb", "-p", f"{(path_alias / tgt_path_trunk).as_posix()}"])
 
     run_mc_command(["mc", "cp", "-r", f"{args.src_path}", f"{(path_alias / tgt_path_trunk).as_posix()}"])
 
-    print(f"\nUpload completed successfully to: {tgt_path_trunk.as_posix()}")
+    out_path = (tgt_path_trunk / args.src_path).relative_to(args.bucket).as_posix() # Skip bucket name for output
+    print(f"\nUpload completed successfully to: {out_path}")
+
+    return out_path
 
 
-def download_from_minio(args: argparse.Namespace) -> None:
+def download_from_minio(args: argparse.Namespace) -> str:
     """Handle download operation using mc cp."""
     print("\n⬇Starting download operation...")
 
     alias = 'myminio'
     setup_mc_alias(alias, args.minio_api_uri, args.minio_access_key, args.minio_secret_key)
-    src_path_trunk = Path(args.bucket) / generate_git_path(args.use_git, args.src_path)
+    src_path_trunk = Path(args.bucket) / generate_git_path(args.use_git) / args.src_path
     args.tgt_path.mkdir(parents=True, exist_ok=True)
     path_alias = Path(alias)
 
     run_mc_command(["mc", "cp", "-r", f"{(path_alias / src_path_trunk).as_posix()}", f"{args.tgt_path}"])
-    print(f"\nDownload completed successfully to: {args.tgt_path.as_posix()}")
+
+    out_path = (args.tgt_path / args.src_path).as_posix()  # Skip bucket name for output
+    print(f"\nDownload completed successfully to: {out_path}")
+    return out_path
 
 
 def main(args: argparse.Namespace) -> None:
@@ -154,12 +159,16 @@ def main(args: argparse.Namespace) -> None:
     print("=" * 50)
 
     if args.mode == "upload":
-        upload_to_minio(args)
+        msg = upload_to_minio(args)
+        print(f"Your file could be downloaded from: {msg}")
     elif args.mode == "download":
-        download_from_minio(args)
+        msg = download_from_minio(args)
+        print(f"Your file is at: {msg}")
     else:
         print(f"Unknown mode: {args.mode}")
         sys.exit(1)
+    # Output for GitHub Actions
+    print(f"::set-output name=artifact_path::{msg}")
 
 
 if __name__ == "__main__":
@@ -201,4 +210,3 @@ if __name__ == "__main__":
         help="If git repo info is used for path generation")
 
     main(parser.parse_args())
-

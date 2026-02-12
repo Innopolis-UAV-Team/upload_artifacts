@@ -16,6 +16,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Upload artifacts
+        id: uploader
         uses: ./
         with:
           src_path: ./README.md
@@ -29,4 +30,8 @@ jobs:
           minio_access_key: ${{ secrets.MINIO_ACCESS_KEY }}
           minio_secret_key: ${{ secrets.MINIO_SECRET_KEY }}
           mode: download
+
+      - name: Verify upload
+        run: |
+          echo "Uploaded artifact path: ${{ steps.uploader.outputs.artifact_path }}"
 
